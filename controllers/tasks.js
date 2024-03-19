@@ -1,7 +1,8 @@
 const taskModel = require("../models/task");
 const taskFxn = {
     getAllTasks: (req, res) => {
-        taskModel.find({})
+        console.log(req.url);
+        taskModel.find()
             .then(task => {
                 res.status(200).json(
                     {
@@ -10,35 +11,19 @@ const taskFxn = {
                     }
                 );
             }).catch(error => {
+                console.log(error.message)
                 const err = "error loading tasks"
                 res.status(500).json(
                     {
                         status: false,
                         data: err,
-                        error:error.message
+                        error: error.message
                     }
                 );
             })
     },
-    getTasksById: (req, res) => {
-        const taskId = req.params.id;
-
-        taskModel.findById(taskId)
-            .then(foundTask => {
-                if (!foundTask) {
-                    return res.status(401).json({
-                        task: "task not found"
-                    })
-                }
-                res.json({
-                    task: foundTask.taskName
-                })
-            }).catch(err => {
-                res.status(500).send({
-                    message: err.message || "Error occured while retrieving task with id " + id
-                })
-            })
-    },
+   
+   
 
     deleteAllTasks: (req, res) => {
         taskModel.deleteMany({})
@@ -52,18 +37,23 @@ const taskFxn = {
     },
     deleteTasksById: (req, res) => {
         const id = req.params.id
+        console.log("id; ", id);
         taskModel.findByIdAndDelete(id)
             .then(sample => {
                 return res.status(200).json({ message: `${sample.taskName} deleted with success` })
             }).catch(err => {
-                res.status(500).send({
-                    message: err.message || "Error occured while retrieving task with id " + id
+                res.status(500).json({
+                    message: "Error occured while deleting task with id " + id
                 })
             })
     },
+  
     updateTasks: async (req, res) => {
-        let { taskName, description, tags, status } = req.body;
         try {
+        const { taskName, description, tags, status } = req.body.data;
+
+            console.log("body",req.body);
+            console.log("body:",{ taskName, description, tags, status })
             if (!req.body) return res.json({ message: "invald payload" });
             const updatedTask = await taskModel.findByIdAndUpdate(
                 { _id: req.params.id },
@@ -75,9 +65,9 @@ const taskFxn = {
                         "status": status
                     }
                 },
-                { returnDocument: true }
+                // { returnDocument: true }
             );
-            res.json({
+        return    res.json({
                 message: "update successfull",
                 data: updatedTask
             })
@@ -86,16 +76,11 @@ const taskFxn = {
         }
     },
     createTask: async (req, res) => {
-        let { taskName, description, author, tags,} = req.body;
+        let { taskName, description, author, tags,status } = req.body.data;
         try {
-            if (!title || !description) return res.json({ message: "invald payload" });
+            if (!taskName || !description) return res.json({ message: "invald payload" });
             const createdTask = await taskModel.create(
-                {
-                    "taskName": taskName,
-                    "description": description,
-                    "tags": tags,
-                    "author":author
-                }
+                { taskName, description, author, tags,status }
             );
             res.json({
                 message: "Task created successfully",

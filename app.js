@@ -5,7 +5,9 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const authrouter = require("./routes/index");
 const userroute = require("./routes/index");
-const articleroute = require("./routes/index");
+const taskroute = require("./routes/tasks");
+const taskrout = require("./routes/getTask");
+
 
 dotenv.config();
  mongoose.connect(process.env.URL)
@@ -24,6 +26,7 @@ app.use(express.urlencoded({extended:false}));
 app.use("/auth",authrouter);
 app.use("/user",userroute);
 app.use("/task",taskroute);
+app.use("/getTask",taskrout);
 
 
 app.get("/status", (req,res)=>{

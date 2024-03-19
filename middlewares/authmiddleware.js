@@ -28,13 +28,13 @@ const authChecker = {
         let validToken;
 
         try {
-             validToken = jwt.verify(token, process.env.JWTSECRET);
+            validToken = jwt.verify(token, process.env.JWTSECRET);
         }
         catch (error) {
-            if(error instanceof JsonWebTokenError){
-              return  res.status(401).json({
-                    status:1,
-                    message:"Invalid access"
+            if (error instanceof JsonWebTokenError) {
+                return res.status(401).json({
+                    status: 1,
+                    message: "Invalid access"
                 })
             }
 
@@ -44,15 +44,15 @@ const authChecker = {
         next();
     },
     checkUser: async (req, res, next) => {
-        if(!req.body.email){
+        if (!req.body.data.email) {
             res.json({
-                status:false,
-                data:null,
-                message:"No email provided"
+                status: false,
+                data: null,
+                message: "No email provided"
             })
             return
         }
-        const user = await userModel.findOne({ email: req.body.email });
+        const user = await userModel.findOne({ email: req.body.data.email });
 
         if (!user) {
             res.status(403).json({

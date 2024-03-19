@@ -51,7 +51,7 @@ const authentication = {
     register: async (req, res) => {
         //getting user inputs from request
         try {
-            let { firstName, lastName, email, password } = req.body;
+            let { firstName, lastName, email, password } = req.body.data;
 
             console.log(`username: ${firstName}`);
 
@@ -90,7 +90,7 @@ const authentication = {
 
     },
     signIn: async (req, res) => {
-        let { email, password } = req.body;
+        let { email, password } = req.body.data;
 
         try {
             if (!email || !password) {
@@ -107,7 +107,9 @@ const authentication = {
 
             const accessToken = { token: webTokenGen(email, ted.data["_id"]) };
 
-            res.status(ted.status).json(accessToken);
+            res.status(ted.status).json({
+                status:true,
+                accessToken});
 
         } catch (error) {
             return res.status(500).json({ success: false, message: error.message })
